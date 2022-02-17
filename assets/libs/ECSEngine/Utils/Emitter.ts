@@ -49,9 +49,9 @@ export class Emitter<T> {
      * @param eventType 事件类型
      * @param handler 事件函数
      */
-    public removeObserver(eventType: T, handler: Function) {
+    public removeObserver(eventType: T, handler: Function, context: any) {
         let messageData = this._messageTable.get(eventType);
-        let index = messageData.findIndex(data => data.func == handler);
+        let index = messageData.findIndex(data => data.func == handler && context == data.context);
         if (index != -1)
             messageData.splice(index, 1);
     }

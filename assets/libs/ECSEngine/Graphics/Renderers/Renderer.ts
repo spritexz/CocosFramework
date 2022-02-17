@@ -22,7 +22,9 @@ export abstract class Renderer {
 
     public onAddedToScene(scene: Scene) { }
 
-    public unload() { }
+    public unload() { 
+        Core.emitter.removeObserver(CoreEvents.renderChanged, this.onRenderChanged, this);
+    }
 
     protected beginRender(cam: ICamera) {
         if (!Graphics.instance)
