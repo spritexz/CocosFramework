@@ -1,5 +1,5 @@
 import { Button, EventHandler, find, instantiate, Label, Prefab, resources, Sprite, Toggle, ToggleComponent } from "cc";
-import { Scene } from "../../libs/ecs/ECS/Scene";
+import { Scene } from "../../libs/ECSEngine/ECS/Scene";
 import { component_camera as component_camera } from "../components/component_camera";
 import { SpriteRenderer } from "../components/SpriteRenderer";
 

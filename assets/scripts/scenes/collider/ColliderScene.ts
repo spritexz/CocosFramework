@@ -1,9 +1,9 @@
 import { instantiate, Prefab, resources, Sprite } from "cc";
-import { Core } from "../../../libs/ecs/Core";
-import { BoxCollider } from "../../../libs/ecs/ECS/Components/Physics/Colliders/BoxCollider";
-import { Mover } from "../../../libs/ecs/ECS/Components/Physics/Mover";
-import { Vector2 } from "../../../libs/ecs/Math/Vector2";
-import { CollisionResult } from "../../../libs/ecs/Physics/Shapes/CollisionResult";
+import { Core } from "../../../libs/ECSEngine/Core";
+import { BoxCollider } from "../../../libs/ECSEngine/ECS/Components/Physics/Colliders/BoxCollider";
+import { Mover } from "../../../libs/ECSEngine/ECS/Components/Physics/Mover";
+import { Vector2 } from "../../../libs/ECSEngine/Math/Vector2";
+import { CollisionResult } from "../../../libs/ECSEngine/Physics/Shapes/CollisionResult";
 import { SpriteRenderer } from "../../components/SpriteRenderer";
 import { RenderScene, sampleScene } from "../RenderScene";
 import { ColliderTrigger } from "./ColliderTrigger";

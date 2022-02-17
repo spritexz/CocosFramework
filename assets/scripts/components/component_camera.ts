@@ -1,14 +1,14 @@
 import { Camera, clamp, find, Label, Node, Vec3, view } from "cc";
-import { Insist } from "../../libs/ecs/Debug/Insist";
-import { Component } from "../../libs/ecs/ECS/Component";
-import { IUpdatable } from "../../libs/ecs/ECS/Components/IUpdatable";
-import { ComponentTransform } from "../../libs/ecs/ECS/Transform";
-import { ICamera } from "../../libs/ecs/Graphics/Batcher/ICamera";
-import { MathHelper } from "../../libs/ecs/Math/MathHelper";
-import { Matrix2D } from "../../libs/ecs/Math/Matrix2D";
-import { Rectangle } from "../../libs/ecs/Math/Rectangle";
-import { Vector2 } from "../../libs/ecs/Math/Vector2";
-import { Vector2Ext } from "../../libs/ecs/Utils/Extensions/Vector2Ext";
+import { Insist } from "../../libs/ECSEngine/Debug/Insist";
+import { Component } from "../../libs/ECSEngine/ECS/Component";
+import { IUpdatable } from "../../libs/ECSEngine/ECS/Components/IUpdatable";
+import { ComponentTransform } from "../../libs/ECSEngine/ECS/Transform";
+import { ICamera } from "../../libs/ECSEngine/Graphics/Batcher/ICamera";
+import { MathHelper } from "../../libs/ECSEngine/Math/MathHelper";
+import { Matrix2D } from "../../libs/ECSEngine/Math/Matrix2D";
+import { Rectangle } from "../../libs/ECSEngine/Math/Rectangle";
+import { Vector2 } from "../../libs/ECSEngine/Math/Vector2";
+import { Vector2Ext } from "../../libs/ECSEngine/Utils/Extensions/Vector2Ext";
 import { Input } from "../Input/Input";
 
 class CameraInset {

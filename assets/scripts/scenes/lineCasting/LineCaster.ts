@@ -1,9 +1,9 @@
 
-import { IUpdatable } from "../../../libs/ecs/ECS/Components/IUpdatable";
-import { RenderableComponent } from "../../../libs/ecs/ECS/Components/Renderables/RenderableComponent";
-import { Color } from "../../../libs/ecs/Graphics/Batcher/Color";
-import { Vector2 } from "../../../libs/ecs/Math/Vector2";
-import { Physics } from "../../../libs/ecs/Physics/Physics";
+import { IUpdatable } from "../../../libs/ECSEngine/ECS/Components/IUpdatable";
+import { RenderableComponent } from "../../../libs/ECSEngine/ECS/Components/Renderables/RenderableComponent";
+import { Color } from "../../../libs/ECSEngine/Graphics/Batcher/Color";
+import { Vector2 } from "../../../libs/ECSEngine/Math/Vector2";
+import { Physics } from "../../../libs/ECSEngine/Physics/Physics";
 import { component_camera } from "../../components/component_camera";
 import { Batcher } from "../../graphics/Batcher";
 import { Input } from "../../Input/Input";

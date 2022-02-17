@@ -1,11 +1,11 @@
 import { Camera, find, Graphics, Node, Color as ccColor } from "cc";
-import { Color } from "../../libs/ecs/Graphics/Batcher/Color";
-import { IBatcher } from "../../libs/ecs/Graphics/Batcher/IBatcher";
-import { MathHelper } from "../../libs/ecs/Math/MathHelper";
-import { Rectangle } from "../../libs/ecs/Math/Rectangle";
-import { Vector2 } from "../../libs/ecs/Math/Vector2";
-import { RectangleExt } from "../../libs/ecs/Utils/Extensions/RectangleExt";
-import { Vector2Ext } from "../../libs/ecs/Utils/Extensions/Vector2Ext";
+import { Color } from "../../libs/ECSEngine/Graphics/Batcher/Color";
+import { IBatcher } from "../../libs/ECSEngine/Graphics/Batcher/IBatcher";
+import { MathHelper } from "../../libs/ECSEngine/Math/MathHelper";
+import { Rectangle } from "../../libs/ECSEngine/Math/Rectangle";
+import { Vector2 } from "../../libs/ECSEngine/Math/Vector2";
+import { RectangleExt } from "../../libs/ECSEngine/Utils/Extensions/RectangleExt";
+import { Vector2Ext } from "../../libs/ECSEngine/Utils/Extensions/Vector2Ext";
 import { component_camera } from "../components/component_camera";
 
 export class Batcher implements IBatcher {

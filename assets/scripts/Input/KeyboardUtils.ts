@@ -1,5 +1,5 @@
 import { EventKeyboard, SystemEvent, systemEvent } from "cc";
-import { List } from "../../libs/ecs/Utils/Linq/list";
+import { List } from "../../libs/ECSEngine/Utils/Linq/list";
 import { Keys } from "./Keys";
 
 export class KeyboardUtils {

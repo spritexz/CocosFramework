@@ -1,6 +1,6 @@
 import { resources, Prefab, instantiate, Sprite } from "cc";
-import { BoxCollider } from "../../../libs/ecs/ECS/Components/Physics/Colliders/BoxCollider";
-import { Vector2 } from "../../../libs/ecs/Math/Vector2";
+import { BoxCollider } from "../../../libs/ECSEngine/ECS/Components/Physics/Colliders/BoxCollider";
+import { Vector2 } from "../../../libs/ECSEngine/Math/Vector2";
 import { SpriteRenderer } from "../../components/SpriteRenderer";
 import { RenderScene, sampleScene } from "../RenderScene";
 import { LineCaster } from "./LineCaster";

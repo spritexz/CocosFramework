@@ -1,11 +1,11 @@
 import { find, instantiate, Prefab, resources, Sprite, view } from "cc";
-import { Core } from "../../../libs/ecs/Core";
-import { ArcadeRigidbody } from "../../../libs/ecs/ECS/Components/Physics/ArcadeRigidbody";
-import { CircleCollider } from "../../../libs/ecs/ECS/Components/Physics/Colliders/CircleCollider";
-import { CoreEvents } from "../../../libs/ecs/ECS/CoreEvents";
-import { Time } from "../../../libs/ecs/ECS/Utils/Time";
-import { Vector2 } from "../../../libs/ecs/Math/Vector2";
-import { UUID } from "../../../libs/ecs/Utils/UUID";
+import { Core } from "../../../libs/ECSEngine/Core";
+import { ArcadeRigidbody } from "../../../libs/ECSEngine/ECS/Components/Physics/ArcadeRigidbody";
+import { CircleCollider } from "../../../libs/ECSEngine/ECS/Components/Physics/Colliders/CircleCollider";
+import { CoreEvents } from "../../../libs/ECSEngine/ECS/CoreEvents";
+import { Time } from "../../../libs/ECSEngine/ECS/Utils/Time";
+import { Vector2 } from "../../../libs/ECSEngine/Math/Vector2";
+import { UUID } from "../../../libs/ECSEngine/Utils/UUID";
 import { component_camera } from "../../components/component_camera";
 import { SpriteRenderer } from "../../components/SpriteRenderer";
 import { RenderScene, sampleScene } from "../RenderScene";

@@ -1,9 +1,9 @@
-import { IUpdatable } from "../../../libs/ecs/ECS/Components/IUpdatable";
-import { RenderableComponent } from "../../../libs/ecs/ECS/Components/Renderables/RenderableComponent";
-import { IBatcher } from "../../../libs/ecs/Graphics/Batcher/IBatcher";
-import { ICamera } from "../../../libs/ecs/Graphics/Batcher/ICamera";
-import { Rectangle } from "../../../libs/ecs/Math/Rectangle";
-import { VerletWorld } from "../../../libs/ecs/Physics/Verlet/VerletWorld";
+import { IUpdatable } from "../../../libs/ECSEngine/ECS/Components/IUpdatable";
+import { RenderableComponent } from "../../../libs/ECSEngine/ECS/Components/Renderables/RenderableComponent";
+import { IBatcher } from "../../../libs/ECSEngine/Graphics/Batcher/IBatcher";
+import { ICamera } from "../../../libs/ECSEngine/Graphics/Batcher/ICamera";
+import { Rectangle } from "../../../libs/ECSEngine/Math/Rectangle";
+import { VerletWorld } from "../../../libs/ECSEngine/Physics/Verlet/VerletWorld";
 import { component_camera } from "../../components/component_camera";
 import { Input } from "../../Input/Input";
 import { Keys } from "../../Input/Keys";

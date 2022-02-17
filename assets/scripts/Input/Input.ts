@@ -1,6 +1,6 @@
 import { EventMouse, EventTouch, macro, SystemEvent, systemEvent, Touch, Node } from "cc";
-import { Vector2 } from "../../libs/ecs/Math/Vector2";
-import { List } from "../../libs/ecs/Utils/Linq/list";
+import { Vector2 } from "../../libs/ECSEngine/Math/Vector2";
+import { List } from "../../libs/ECSEngine/Utils/Linq/list";
 import { KeyboardUtils } from "./KeyboardUtils";
 import { Keys } from "./Keys";
 import { ButtonState, MouseState } from "./MouseState";

@@ -1,10 +1,10 @@
 import { find, gfx, instantiate, Material, MeshRenderer, PrimitiveType, resources, SpriteFrame, UITransform } from "cc";
-import { Insist } from "../../libs/ecs/Debug/Insist";
-import { RenderableComponent } from "../../libs/ecs/ECS/Components/Renderables/RenderableComponent";
-import { Color } from "../../libs/ecs/Graphics/Batcher/Color";
-import { IBatcher } from "../../libs/ecs/Graphics/Batcher/IBatcher";
-import { ICamera } from "../../libs/ecs/Graphics/Batcher/ICamera";
-import { Vector2 } from "../../libs/ecs/Math/Vector2";
+import { Insist } from "../../libs/ECSEngine/Debug/Insist";
+import { RenderableComponent } from "../../libs/ECSEngine/ECS/Components/Renderables/RenderableComponent";
+import { Color } from "../../libs/ECSEngine/Graphics/Batcher/Color";
+import { IBatcher } from "../../libs/ECSEngine/Graphics/Batcher/IBatcher";
+import { ICamera } from "../../libs/ECSEngine/Graphics/Batcher/ICamera";
+import { Vector2 } from "../../libs/ECSEngine/Math/Vector2";
 import { PolygonSprite } from "./PolygonSprite";
 
 export class Mesh extends RenderableComponent {

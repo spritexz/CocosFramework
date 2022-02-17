@@ -1,8 +1,8 @@
 
 import { _decorator, Component, Node, Button, find, instantiate, Label, Prefab, resources, Toggle, ToggleComponent } from 'cc';
-import { Core } from '../libs/ecs/Core';
-import { CoreEvents } from '../libs/ecs/ECS/CoreEvents';
-import { Graphics } from '../libs/ecs/Graphics/Graphics';
+import { Core } from '../libs/ECSEngine/Core';
+import { CoreEvents } from '../libs/ECSEngine/ECS/CoreEvents';
+import { Graphics } from '../libs/ECSEngine/Graphics/Graphics';
 import { PolygonSprite } from './components/PolygonSprite';
 import { Batcher } from './graphics/Batcher';
 import { Input } from './Input/Input';

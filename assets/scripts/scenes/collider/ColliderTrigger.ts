@@ -1,6 +1,6 @@
-import { Component } from "../../../libs/ecs/ECS/Component";
-import { Collider } from "../../../libs/ecs/ECS/Components/Physics/Colliders/Collider";
-import { ITriggerListener } from "../../../libs/ecs/ECS/Components/Physics/ITriggerListener";
+import { Component } from "../../../libs/ECSEngine/ECS/Component";
+import { Collider } from "../../../libs/ECSEngine/ECS/Components/Physics/Colliders/Collider";
+import { ITriggerListener } from "../../../libs/ECSEngine/ECS/Components/Physics/ITriggerListener";
 
 export class ColliderTrigger extends Component implements ITriggerListener {
     onTriggerEnter(other: Collider, local: Collider) {

@@ -1,4 +1,4 @@
-import { List } from "../../libs/ecs/Utils/Linq/list";
+import { List } from "../../libs/ECSEngine/Utils/Linq/list";
 import { Input } from "./Input";
 
 export enum OverlapBehavior {

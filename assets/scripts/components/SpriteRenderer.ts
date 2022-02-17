@@ -1,7 +1,7 @@
 import { find, Graphics, Size, Sprite, UITransform, utils, Vec2, Vec3 } from "cc";
-import { RenderableComponent } from "../../libs/ecs/ECS/Components/Renderables/RenderableComponent";
-import { ComponentTransform } from "../../libs/ecs/ECS/Transform";
-import { Vector2 } from "../../libs/ecs/Math/Vector2";
+import { RenderableComponent } from "../../libs/ECSEngine/ECS/Components/Renderables/RenderableComponent";
+import { ComponentTransform } from "../../libs/ECSEngine/ECS/Transform";
+import { Vector2 } from "../../libs/ECSEngine/Math/Vector2";
 import { Batcher } from "../graphics/Batcher";
 import { SceneEmitType, RenderScene } from "../scenes/RenderScene";
 import { component_camera } from "./component_camera";
