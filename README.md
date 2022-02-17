@@ -1,4 +1,5 @@
 # cocos-framework
+https://github.com/esengine/ecs-framework
 该项目旨在将ecs框架与cocos3.0+渲染部分进行结合，并新增一套适用于cocos的游戏帮助类。
 
 ## 渲染框架介绍
@@ -9,8 +10,3 @@
 - DefaultRenderer：渲染场景中每个`component_render`都会被进行渲染
 
 你可以随意继承`Renderer`并以所需的任何方式渲染。场景中包含一个`renderableComponents`字段，该字段包含所有的`component_render`以便于访问和过滤。
-
-## 渲染截图
-![avatar1](/images/screenshot.png)
-![avatar2](/images/screenshot1.png)
-![avatar3](/images/screenshot2.png)
