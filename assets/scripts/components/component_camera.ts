@@ -1,4 +1,4 @@
-import { Camera, clamp, find, Label, Node, Vec3, view } from "cc";
+import { Camera, clamp, find, Label, Node, Vec3, view, screen } from "cc";
 import { Insist } from "../../libs/ECSEngine/Debug/Insist";
 import { Component } from "../../libs/ECSEngine/ECS/Component";
 import { IUpdatable } from "../../libs/ECSEngine/ECS/Components/IUpdatable";
@@ -168,7 +168,7 @@ export class component_camera extends Component implements IUpdatable, ICamera {
         const visibleSize = view.getVisibleSize();
         this.origin = new Vector2(visibleSize.width / 2, visibleSize.height / 2);
 
-        const canvasSize = view.getCanvasSize();
+        const canvasSize = screen.windowSize;
         this.ratio = new Vector2(visibleSize.width / canvasSize.width, visibleSize.height / canvasSize.height);
     }
 
