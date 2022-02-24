@@ -1,11 +1,15 @@
 
 import { ComponentReplaced, Entity, EntityChanged, EntityReleased } from "./Entity";
 import { EntityIsNotDestroyedException } from "./exceptions/EntityIsNotDestroyedException";
+import { PoolDoesNotContainEntityException } from "./exceptions/PoolDoesNotContainEntityException";
 import { Group } from "./Group";
 import { IComponent } from "./interfaces/IComponent";
+import { IMatcher } from "./interfaces/IMatcher";
 import { ISystem } from "./interfaces/ISystem";
+import { ReactiveSystem } from "./ReactiveSystem";
 import { Bag } from "./utils/Bag";
 import { ISignal, Signal } from "./utils/Signal";
+import { UUID } from "./utils/UUID";
 
 /** 事件接口: Pool数据发生了变化 */
 export interface PoolChanged { (pool: Pool, entity: Entity): void; }
@@ -150,29 +154,155 @@ export class Pool {
      * 创建一个新实体
      */
     public createEntity(name: string): Entity {
-        const entity = this._reusableEntities.size() > 0 ? this._reusableEntities.removeLast() : new Entity(this._componentsEnum, this._totalComponents)
-        entity._isEnabled = true
+        let entity:Entity = null;
+        if (this._reusableEntities.size() > 0) {
+            entity =this._reusableEntities.removeLast();
+        } else {
+            entity =new Entity(this._componentsEnum, this._totalComponents);
+        }
         entity.name = name
-        entity._creationIndex = this._creationIndex++
         entity.id = UUID.randomUUID()
-        entity.addRef()
-        this._entities[entity.id] = entity
-        this._entitiesCache = null
+        entity._isEnabled = true
+        entity._creationIndex = this._creationIndex++
         entity.onComponentAdded.add(this._cachedUpdateGroupsComponentAddedOrRemoved)
         entity.onComponentRemoved.add(this._cachedUpdateGroupsComponentAddedOrRemoved)
         entity.onComponentReplaced.add(this._cachedUpdateGroupsComponentReplaced)
         entity.onEntityReleased.add(this._cachedOnEntityReleased)
+        entity.addRef()
+
+        this._entities[entity.id] = entity
+        this._entitiesCache = null
 
         const onEntityCreated: any = this.onEntityCreated
-        if (onEntityCreated.active) onEntityCreated.dispatch(this, entity)
+        if (onEntityCreated.active) {
+            onEntityCreated.dispatch(this, entity)
+        }
         return entity
     }
 
+    /**
+     * 摧毁一个实体
+     */
+    public destroyEntity(entity: Entity) {
+        if (!(entity.id in this._entities)) {
+            throw new PoolDoesNotContainEntityException(entity, "无法摧毁实体!")
+        }
+        delete this._entities[entity.id]
+        this._entitiesCache = null
 
+        const onEntityWillBeDestroyed: any = this.onEntityWillBeDestroyed
+        if (onEntityWillBeDestroyed.active) {
+            onEntityWillBeDestroyed.dispatch(this, entity)
+        }
 
+        entity.destroy()
 
+        const onEntityDestroyed: any = this.onEntityDestroyed
+        if (onEntityDestroyed.active) {
+            onEntityDestroyed.dispatch(this, entity)
+        }
 
-    
+        if (entity._refCount === 1) {
+            entity.onEntityReleased.remove(this._cachedOnEntityReleased)
+            this._reusableEntities.add(entity)
+        } else {
+            this._retainedEntities[entity.id] = entity
+        }
+        entity.release()
+    }
+
+    /**
+     * 摧毁所有实体
+     */
+    public destroyAllEntities() {
+        const entities = this.getEntities()
+        for (let i = 0, entitiesLength = entities.length; i < entitiesLength; i++) {
+            this.destroyEntity(entities[i])
+        }
+    }
+
+    /**
+     * 检查池是否有此实体
+     */
+    public hasEntity(entity: Entity): boolean {
+        return entity.id in this._entities
+    }
+
+    /**
+     * 获取所有实体
+     */
+    public getEntities(matcher?: IMatcher): Entity[] {
+        if (matcher) {
+            /** PoolExtension::getEntities */
+            return this.getGroup(matcher).getEntities()
+        } else {
+            if (this._entitiesCache == null) {
+                const entities = this._entities
+                const keys = Object.keys(entities)
+                const length = keys.length
+                const entitiesCache = this._entitiesCache = new Array(length)
+
+                for (let i = 0; i < length; i++) {
+                    entitiesCache[i] = entities[keys[i]]
+                }
+            }
+            return this._entitiesCache
+        }
+    }
+
+    /**
+     * 获取匹配的所有实体
+     */
+    public getGroup(matcher: IMatcher): Group {
+        let group: Group
+
+        if (matcher.id in this._groups) {
+            group = this._groups[matcher.id]
+        } else {
+            group = new Group(matcher)
+
+            const entities = this.getEntities()
+            for (let i = 0, entitiesLength = entities.length; i < entitiesLength; i++) {
+                group.handleEntitySilently(entities[i])
+            }
+            this._groups[matcher.id] = group
+
+            for (let i = 0, indicesLength = matcher.indices.length; i < indicesLength; i++) {
+                const index = matcher.indices[i]
+                if (this._groupsForIndex[index] == null) {
+                    this._groupsForIndex[index] = new Bag()
+                }
+                this._groupsForIndex[index].add(group)
+            }
+            const onGroupCreated: any = this.onGroupCreated
+            if (onGroupCreated.active) {
+                onGroupCreated.dispatch(this, group)
+            }
+        }
+        return group
+    }
+
+    /**
+     * 创建系统
+     */
+    public createSystem(system: any) {
+        if ('function' === typeof system) {
+            const Klass: any = system
+            system = new Klass()
+        }
+
+        Pool.setPool(system, this)
+
+        const reactiveSystem = as(system, 'trigger')
+        if (reactiveSystem != null) {
+            return new ReactiveSystem(this, reactiveSystem)
+        }
+        const multiReactiveSystem = as(system, 'triggers')
+        if (multiReactiveSystem != null) {
+            return new ReactiveSystem(this, multiReactiveSystem)
+        }
+        return system
+    }
 
 
     /** 

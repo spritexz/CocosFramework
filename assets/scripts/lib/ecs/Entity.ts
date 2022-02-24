@@ -1,5 +1,6 @@
 
 import { EntityAlreadyHasComponentException } from "./exceptions/EntityAlreadyHasComponentException";
+import { EntityDoesNotHaveComponentException } from "./exceptions/EntityDoesNotHaveComponentException";
 import { EntityIsAlreadyReleasedException } from "./exceptions/EntityIsAlreadyReleasedException";
 import { EntityIsNotEnabledException } from "./exceptions/EntityIsNotEnabledException";
 import { IComponent } from "./interfaces/IComponent";
@@ -166,7 +167,7 @@ export class Entity {
             throw new EntityIsNotEnabledException("Cannot add component!")
         }
         if (this.hasComponent(index)) {
-            const errorMsg = "Cannot add component at index " + index + " to " + this
+            const errorMsg = `不能在索引处添加组件${index}到${this}`
             throw new EntityAlreadyHasComponentException(errorMsg, index)
         }
         this._components[index] = component
@@ -180,14 +181,114 @@ export class Entity {
         return this
     }
 
+    /**
+     * 移除组件
+     */
+    public removeComponent(index: number): Entity {
+        if (!this._isEnabled) {
+            throw new EntityIsNotEnabledException("不能删除组件!")
+        }
+        if (!this.hasComponent(index)) {
+            const errorMsg = `无法从${this}中删除索引${index}处的组件`
+            throw new EntityDoesNotHaveComponentException(errorMsg, index)
+        }
+        this._replaceComponent(index, null)
+        return this
+    }
 
+    /**
+     * 跟换组件, 没有时就添加新的组件
+     */
+    public replaceComponent(index: number, component: IComponent): Entity {
+        if (!this._isEnabled) {
+            throw new EntityIsNotEnabledException("不能替代组件!")
+        }
+        if (this.hasComponent(index)) {
+            this._replaceComponent(index, component)
+        } else if (component != null) {
+            this.addComponent(index, component)
+        }
+        return this
+    }
 
+    /**
+     * 跟换组件
+     */
+    protected _replaceComponent(index: number, replacement: IComponent) {
+        const components = this._components;
+        const previousComponent = components[index];
+        if (previousComponent === replacement) {
+            let onComponentReplaced: any = this.onComponentReplaced;
+            if (onComponentReplaced.active) {
+                onComponentReplaced.dispatch(this, index, previousComponent, replacement);
+            }
+        } else {
+            components[index] = replacement;
+            this._componentsCache = null;
+            if (replacement == null) {
+                //delete components[index]
+                components[index] = null;
+                this._componentIndicesCache = null;
+                this._toStringCache = null;
+                const onComponentRemoved: any = this.onComponentRemoved;
+                if (onComponentRemoved.active) {
+                    onComponentRemoved.dispatch(this, index, previousComponent);
+                }
+            } else {
+                const onComponentReplaced: any = this.onComponentReplaced
+                if (onComponentReplaced.active) {
+                    onComponentReplaced.dispatch(this, index, previousComponent, replacement);
+                }
+            }
+        }
+    }
 
+    /**
+     * 获取组件
+     */
+    public getComponent(index: number): IComponent {
+        if (!this.hasComponent(index)) {
+            const errorMsg = `无法从${this}获取索引${index}处的组件`;
+            throw new EntityDoesNotHaveComponentException(errorMsg, index);
+        }
+        return this._components[index]
+    }
 
+    /** 
+     * 获取组件列表
+     */
+    public getComponents(): IComponent[] {
+        if (this._componentsCache == null) {
+            const components = []
+            const _components = this._components
+            for (let i = 0, j = 0, componentsLength = _components.length; i < componentsLength; i++) {
+                const component = _components[i]
+                if (component != null) {
+                    components[j++] = component
+                }
+            }
+            this._componentsCache = components
+        }
+        return this._componentsCache
+    }
 
-
-
-    
+    /** 
+     * 获取组件索引列表
+     */
+    public getComponentIndices(): number[] {
+        if (this._componentIndicesCache == null) {
+            const indices = []
+            const _components = this._components
+            for (let i = 0, j = 0, componentsLength = _components.length; i < componentsLength; i++) {
+                if (_components[i] != null) {
+                    indices[j++] = i
+                }
+            }
+            this._componentIndicesCache = indices
+        }
+        return this._componentIndicesCache
+    }
+  
 
     /** 
      * 是否有这个组件
@@ -210,7 +311,7 @@ export class Entity {
     }
 
     /**
-     * 是否有这些任意的组件
+     * 是否包含这些组件中任意的一个
      */
     public hasAnyComponent(indices: number[]): boolean {
         const _components = this._components
@@ -223,6 +324,50 @@ export class Entity {
     }
 
     /**
+     * 移除所有组件
+     */
+    public removeAllComponents() {
+        this._toStringCache = null
+        const _components = this._components
+        for (let i = 0, componentsLength = _components.length; i < componentsLength; i++) {
+            if (_components[i] != null) {
+                this._replaceComponent(i, null)
+            }
+        }
+    }
+
+    /**
+     * 销毁实体数据
+     */
+    public destroy() {
+        this.removeAllComponents()
+        this.onComponentAdded.clear()
+        this.onComponentReplaced.clear()
+        this.onComponentRemoved.clear()
+        this._isEnabled = false
+    }
+
+    /**
+     * 将实体数据转为字符串
+     */
+    public toString() {
+        if (this._toStringCache == null) {
+            const sb = []
+            const seperator = ", "
+            const components = this.getComponents()
+            const lastSeperator = components.length - 1
+            for (let i = 0, j = 0, componentsLength = components.length; i < componentsLength; i++) {
+                sb[j++] = components[i].constructor['name'].replace('Component', '') || i + ''
+                if (i < lastSeperator) {
+                    sb[j++] = seperator
+                }
+            }
+            this._toStringCache = sb.join('')
+        }
+        return this._toStringCache
+    }
+
+    /**
      * 增加引用计数
      */
     public addRef(): Entity {
@@ -231,7 +376,7 @@ export class Entity {
     }
 
     /**
-     * 释放实体数据
+     * 引用计数-1, 当等于0时, 释放实体数据
      */
     public release() {
         this._refCount -= 1

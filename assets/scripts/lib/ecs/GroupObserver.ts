@@ -93,7 +93,7 @@ export class GroupObserver {
     /**
      * 向该观察者添加一个实体
      */
-    addEntity(group: Group, entity: Entity, index: number, component: IComponent) {
+    addEntity = (group: Group, entity: Entity, index: number, component: IComponent) => {
         if (!(entity.id in this._collectedEntities)) {
             this._collectedEntities[entity.id] = entity
             entity.addRef()

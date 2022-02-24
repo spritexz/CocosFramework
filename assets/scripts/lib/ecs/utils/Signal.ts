@@ -24,7 +24,7 @@ export class Signal<T> implements ISignal<T> {
     /** 监听列表 */
     public _listeners: Bag<T>;
 
-    /** 内容 */
+    /** 上下文 */
     private _context: any;
 
     /** <?> */
