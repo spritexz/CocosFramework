@@ -158,7 +158,7 @@ export class Pool {
         if (this._reusableEntities.size() > 0) {
             entity =this._reusableEntities.removeLast();
         } else {
-            entity =new Entity(this._componentsEnum, this._totalComponents);
+            entity =new Entity(this._totalComponents);
         }
         entity.name = name
         entity.id = UUID.randomUUID()

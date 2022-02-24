@@ -1,10 +1,8 @@
-
 import { EntityAlreadyHasComponentException } from "./exceptions/EntityAlreadyHasComponentException";
 import { EntityDoesNotHaveComponentException } from "./exceptions/EntityDoesNotHaveComponentException";
 import { EntityIsAlreadyReleasedException } from "./exceptions/EntityIsAlreadyReleasedException";
 import { EntityIsNotEnabledException } from "./exceptions/EntityIsNotEnabledException";
 import { IComponent } from "./interfaces/IComponent";
-import { Pool } from "./Pool";
 import { ISignal, Signal } from "./utils/Signal";
 
 /** 事件接口: 实体被释放, 对该实体的所有引用已被释放 */
@@ -86,24 +84,16 @@ export class Entity {
     /** 引用数量 */
     public _refCount: number = 0;
 
-    /** 缓冲池 */
-    private _pool: Pool = null;
-
-    /** 组件枚举 */
-    private _componentsEnum: {} = null;
-
     /**
      * 构建实体
      *  所有东西都是一个实体，可以根据需要添加/删除组件
      */
-    constructor(componentsEnum, totalComponents: number = 16) {
-        this.onEntityReleased = new Signal<EntityReleased>(this)
-        this.onComponentAdded = new Signal<EntityChanged>(this)
-        this.onComponentRemoved = new Signal<EntityChanged>(this)
-        this.onComponentReplaced = new Signal<ComponentReplaced>(this)
-        this._componentsEnum = componentsEnum
-        this._pool = Pool.instance
-        this._components = this.initialize(totalComponents)
+    constructor(totalComponents: number = 16) {
+        this.onEntityReleased = new Signal<EntityReleased>(this);
+        this.onComponentAdded = new Signal<EntityChanged>(this);
+        this.onComponentRemoved = new Signal<EntityChanged>(this);
+        this.onComponentReplaced = new Signal<ComponentReplaced>(this);
+        this._components = this.initialize(totalComponents);
     }
 
     /**
