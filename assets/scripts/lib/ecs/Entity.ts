@@ -99,7 +99,7 @@ export class Entity {
     /**
      * 初始化
      */
-    public static initialize(totalComponents: number, options) {
+    public static initialize(totalComponents: number, options: { entities?: number, components?: number }) {
         Entity.size = options.entities || 100
     }
 
@@ -110,12 +110,12 @@ export class Entity {
 
         //初始化实体池
         const size = Entity.size;
-        const alloc = Entity.alloc;
         if (Entity.alloc == null) {
             Entity.dim(totalComponents, size);
         }
 
         //分配内存池
+        const alloc = Entity.alloc;
         this.instanceIndex = Entity.instanceIndex++;
         let mem: Array<IComponent> = alloc[this.instanceIndex];
         if (mem) {

@@ -98,25 +98,25 @@ export class Pool {
     public onGroupCreated: IPoolGroupChanged<PoolGroupChanged> = null;
 
     /** 获取池中组件的总数 */
-    public get totalComponents(): number { 
-        return this._totalComponents; 
+    public get totalComponents(): number {
+        return this._totalComponents;
     }
 
     /** 获取有效实体计数 */
-    public get count(): number { 
+    public get count(): number {
         return Object.keys(this._entities).length;
     }
 
     /** 获取等待回收的实体数 */
-    public get reusableEntitiesCount(): number { 
+    public get reusableEntitiesCount(): number {
         return this._reusableEntities.size();
     }
 
     /** 获取仍然有引用的实体数 */
-    public get retainedEntitiesCount(): number { 
+    public get retainedEntitiesCount(): number {
         return Object.keys(this._retainedEntities).length;
     }
-     
+
     /**
      * 如果支持，设置系统池
      */
@@ -128,7 +128,7 @@ export class Pool {
     }
 
     /** 构建Pool */
-    constructor(components: {}, totalComponents: number, debug:boolean = false, startCreationIndex: number = 0) {
+    constructor(components: {}, totalComponents: number, debug: boolean = false, startCreationIndex: number = 0) {
         Pool.instance = this;
 
         //绑定事件
@@ -139,7 +139,7 @@ export class Pool {
         this._cachedUpdateGroupsComponentAddedOrRemoved = this.updateGroupsComponentAddedOrRemoved
         this._cachedUpdateGroupsComponentReplaced = this.updateGroupsComponentReplaced
         this._cachedOnEntityReleased = this.onEntityReleased
-  
+
         //初始化数据
         this._debug = debug
         this._componentsEnum = components
@@ -147,18 +147,19 @@ export class Pool {
         this._creationIndex = startCreationIndex
         this._groupsForIndex = new Bag<Bag<Group>>()
         Pool.componentsEnum = components
-        Pool.totalComponents = totalComponents 
+        Pool.totalComponents = totalComponents
     }
 
     /**
      * 创建一个新实体
      */
-    public createEntity(name: string): Entity {
-        let entity:Entity = null;
+    public createEntity<T extends Entity>(type: { new(t: number): T }, name: string): T {
+        let entity: T = null;
         if (this._reusableEntities.size() > 0) {
-            entity =this._reusableEntities.removeLast();
+            entity = <T>this._reusableEntities.removeLast();
         } else {
-            entity =new Entity(this._totalComponents);
+            let c = type;
+            entity = new c(this._totalComponents);
         }
         entity.name = name
         entity.id = UUID.randomUUID()
