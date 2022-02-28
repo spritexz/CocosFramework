@@ -1,10 +1,5 @@
 # cocos-framework
 
-## ECS架构
-https://github.com/esengine/ecs-framework
+## ECS架构, 根据entitas-ts重写
+https://github.com/darkoverlordofdata/entitas-ts
 
-## 基于ECS的寻路算法
-https://github.com/esengine/ecs-astar
-
-## 基于ECS的行为树AI
-https://github.com/esengine/BehaviourTree-ai
