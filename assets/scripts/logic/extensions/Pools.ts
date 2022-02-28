@@ -16,7 +16,6 @@ export class Pools {
     static get pool(): GamePool {
         if (Pools._pool == null) {
             Pools._pool = new GamePool(CoreComponentIds, CoreComponentIds.TotalComponents, false);
-
             //初始化调试界面
             //entitas.viewer.VisualDebugging.init(Pools._pool);
         }
@@ -29,5 +28,11 @@ export class Pools {
             Pools._allPools = [Pools.pool];
         }
         return Pools._allPools;
+    }
+
+    /** 销毁当期Pool */
+    static destroyPool() {
+        Pools._pool.destroyAllEntities();
+        Pools._pool = null;
     }
 }

@@ -1,4 +1,5 @@
 
+import { IController } from "../../lib/ecs/interfaces/IController";
 import { Systems } from "../../lib/ecs/Systems";
 import { GamePool } from "../extensions/GamePool";
 import { Pools } from "../extensions/Pools";
@@ -14,17 +15,21 @@ import { RenderPositionSystem } from "../systems/RenderPositionSystem";
 import { ScoreSystem } from "../systems/ScoreSystem";
 
 /** 游戏控制器 */
-export class GameController {
+export class GameController implements IController {
 
     systems: Systems;
 
-    start() {
+    initialize() {
         this.systems = this.createSystems(Pools.pool);
         this.systems.initialize();
     }
 
-    update(delta: number) {
+    execute(dt: number) {
         this.systems.execute();
+    }
+
+    release() {
+        this.systems.clearReactiveSystems()
     }
 
     createSystems(pool: GamePool) {

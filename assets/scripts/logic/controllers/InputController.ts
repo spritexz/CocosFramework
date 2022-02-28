@@ -1,15 +1,16 @@
 
 import { director, Vec2, Node, EventTouch, input, Input, EventKeyboard, KeyCode, UITransform, Camera, v2, v3 } from "cc";
+import { IController } from "../../lib/ecs/interfaces/IController";
 import { GameEntity } from "../extensions/GameEntity";
 import { Pools } from "../extensions/Pools";
 
 /** 输入控制器 */
-export class InputController {
+export class InputController implements IController {
 
     /** 爆破模式 */
     public burstMode: boolean;
 
-    start() {
+    initialize() {
         
         //添加触摸监听
         let canvas = director.getScene().getChildByName('Canvas') as any as Node
@@ -36,8 +37,16 @@ export class InputController {
         });
     }
 
-    update(delta: number) {
+    execute(dt: number) {
+    }
 
+    release() {
+        let canvas = director.getScene().getChildByName('Canvas') as any as Node
+        canvas.off(Node.EventType.TOUCH_START);
+        canvas.off(Node.EventType.TOUCH_MOVE);
+        canvas.off(Node.EventType.TOUCH_END);
+        canvas.off(Node.EventType.TOUCH_CANCEL);
+        input.off(Input.EventType.KEY_DOWN);
     }
 
     /** 添加到输入 */
