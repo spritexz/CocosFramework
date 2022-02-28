@@ -13,7 +13,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "testSprite",
+    "_name": "Piece0",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": null,
@@ -103,12 +103,12 @@
     "_color": {
       "__type__": "cc.Color",
       "r": 255,
-      "g": 0,
-      "b": 0,
+      "g": 255,
+      "b": 255,
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "7d8f9b89-4fd1-4c9f-a3ab-38ec7cded7ca@f9941",
+      "__uuid__": "05abc774-d0e3-4c3e-a4bf-0c2eb9669d4a@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_type": 0,
