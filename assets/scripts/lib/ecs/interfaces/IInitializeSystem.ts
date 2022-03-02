@@ -1,3 +1,4 @@
+import { World } from "../World";
 import { ISystem } from "./ISystem";
 
 /**
@@ -7,5 +8,5 @@ export interface IInitializeSystem extends ISystem {
     /**
      * 初始化
      */
-    initialize()
+    initialize(world: World);
 }

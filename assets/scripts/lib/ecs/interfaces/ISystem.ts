@@ -1,4 +1,5 @@
 import { Pool } from "../Pool";
+import { World } from "../World";
 
 /**
  * 系统接口

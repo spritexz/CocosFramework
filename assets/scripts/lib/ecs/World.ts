@@ -1,3 +1,5 @@
+import { CoreComponentIds } from "../../logic/components/CoreComponentIds";
+import { GamePool } from "../../logic/extensions/GamePool";
 import { IController } from "./interfaces/IController";
 
 /** 
@@ -5,7 +7,26 @@ import { IController } from "./interfaces/IController";
  */
 export class World {
 
-    public controllers: IController[] = [];
+    /** 控制器列表 */
+    private _controllers: IController[] = [];
+
+    /** 当前Pool */
+    private _pool: GamePool = null;
+
+    /** 获取控制器列表 */
+    public get controllers(): IController[] {
+        return this._controllers;
+    }
+
+    /** 获取当前pool */
+    public get pool(): GamePool {
+        return this._pool;
+    }
+
+    /** 构建世界 */
+    constructor() {
+        this._pool = new GamePool(this, CoreComponentIds, CoreComponentIds.TotalComponents, false);
+    }
 
     /**
      * 初始化
@@ -16,12 +37,12 @@ export class World {
         types.forEach(type=>{
             let c = type;
             let controller = new c();
-            this.controllers.push(controller)
+            this._controllers.push(controller)
         })
 
         //初始化控制器
-        this.controllers.forEach(controller=>{
-            controller.initialize();
+        this._controllers.forEach(controller=>{
+            controller.initialize(this);
         })
     }
 
@@ -29,7 +50,7 @@ export class World {
      * 执行
      */
     public execute(dt: number) {
-        this.controllers.forEach(controller=>{
+        this._controllers.forEach(controller=>{
             controller.execute(dt);
         })
     }
@@ -38,9 +59,11 @@ export class World {
      * 释放
      */
     release() {
-        this.controllers.forEach(controller=>{
+        this._pool.destroyAllEntities();
+        this._controllers.forEach(controller=>{
             controller.release();
         })
-        this.controllers = [];
+        this._controllers = [];
+        this._pool = null;
     }
 }

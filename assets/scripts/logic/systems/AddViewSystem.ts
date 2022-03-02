@@ -1,16 +1,23 @@
 
 import { director, instantiate, Prefab, resources, Node, UITransform } from "cc";
+import { IInitializeSystem } from "../../lib/ecs/interfaces/IInitializeSystem";
 import { IReactiveSystem } from "../../lib/ecs/interfaces/IReactiveSystem";
 import { TriggerOnEvent } from "../../lib/ecs/TriggerOnEvent";
+import { World } from "../../lib/ecs/World";
 import { GameEntity } from "../extensions/GameEntity";
 import { GameMatcher } from "../extensions/GameMatcher";
-import { Pools } from "../extensions/Pools";
 
 /** 添加实体到界面系统 */
-export class AddViewSystem implements IReactiveSystem {
+export class AddViewSystem implements IInitializeSystem, IReactiveSystem {
+
+    private _world: World = null;
 
     public get trigger(): TriggerOnEvent {
         return GameMatcher.Resource.onEntityAdded();
+    }
+
+    initialize(world: World) {
+        this._world = world;
     }
 
     public execute(entities: Array<GameEntity>) {
@@ -29,7 +36,7 @@ export class AddViewSystem implements IReactiveSystem {
                 let ui = node.getComponent(UITransform)
                 let pos = e.position;
                 let w = ui.width;
-                let gameBoard = Pools.pool.gameBoard;
+                let gameBoard = this._world.pool.gameBoard;
                 let x = w + pos.x * w - gameBoard.rows * w / 2;
                 let y = w + pos.y * w - gameBoard.columns * w / 2 + w;
                 node.position.set(x, y);

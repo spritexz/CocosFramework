@@ -1,3 +1,4 @@
+import { World } from "../World";
 
 /** 
  * 控制器接口
@@ -7,7 +8,7 @@ export interface IController {
     /**
      * 初始化
      */
-    initialize();
+    initialize(world: World);
 
     /**
      * 执行

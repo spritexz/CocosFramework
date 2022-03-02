@@ -1,18 +1,21 @@
 
 import { director, Vec2, Node, EventTouch, input, Input, EventKeyboard, KeyCode, UITransform, Camera, v2, v3 } from "cc";
 import { IController } from "../../lib/ecs/interfaces/IController";
+import { World } from "../../lib/ecs/World";
 import { GameEntity } from "../extensions/GameEntity";
-import { Pools } from "../extensions/Pools";
 
 /** 输入控制器 */
 export class InputController implements IController {
+
+    private world: World = null;
 
     /** 爆破模式 */
     public burstMode: boolean = false;
 
     public point: Vec2 = null;
 
-    initialize() {
+    initialize(world: World) {
+        this.world = world;
         
         //添加触摸监听
         let canvas = director.getScene().getChildByName('Canvas') as any as Node
@@ -45,7 +48,10 @@ export class InputController implements IController {
 
     execute(dt: number) {
         if (this.point) {
-            this.addInput(this.point)
+            this.addInput(this.point);
+            if (!this.burstMode) {
+                this.point = null;
+            }
         }
     }
 
@@ -65,7 +71,7 @@ export class InputController implements IController {
         let sprite = canvas.getChildByName("Sprite")
         let uiSprite = sprite.getComponent(UITransform)
         let children = sprite.children
-        let gameBoard = Pools.pool.gameBoard;
+        let gameBoard = this.world.pool.gameBoard;
         let pos = camera.screenToWorld(v3(point.x, point.y));
         pos = uiSprite.convertToNodeSpaceAR(pos);
         for (let i = 0, l = children.length; i < l; i++) {
@@ -74,7 +80,7 @@ export class InputController implements IController {
                 let w = ui.width;
                 let x = ~~((pos.x - w + w/2 + gameBoard.rows * w / 2) / w);
                 let y = ~~((pos.y - w + w/2 + gameBoard.columns * w / 2) / w);
-                let input = Pools.pool.createEntity(GameEntity, 'Input')
+                let input = this.world.pool.createEntity(GameEntity, 'Input')
                 input.addInput(x, y);
                 break
             }

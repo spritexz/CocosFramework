@@ -2,10 +2,10 @@ import { director, Label, Node } from "cc";
 import { Group } from "../../lib/ecs/Group";
 import { IComponent } from "../../lib/ecs/interfaces/IComponent";
 import { IController } from "../../lib/ecs/interfaces/IController";
+import { World } from "../../lib/ecs/World";
 import { ScoreComponent } from "../components/ScoreComponent";
 import { GameEntity } from "../extensions/GameEntity";
 import { GameMatcher } from "../extensions/GameMatcher";
-import { Pools } from "../extensions/Pools";
 
 
 /** 分数控制器 */
@@ -13,11 +13,11 @@ export class ScoreLabelController implements IController {
 
     public label: Label = null;
 
-    initialize() {
+    initialize(world: World) {
         let canvas = director.getScene().getChildByName('Canvas') as any as Node
         this.label = canvas.getChildByName("Label").getComponent(Label)
         
-        var pool = Pools.pool;
+        var pool = world.pool;
         pool.getGroup(GameMatcher.Score).onEntityAdded.add(this.onEntityAdded.bind(this));
 
         this.updateScore(pool.score.value);

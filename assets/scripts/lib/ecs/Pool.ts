@@ -10,6 +10,7 @@ import { ReactiveSystem } from "./ReactiveSystem";
 import { Bag } from "./utils/Bag";
 import { ISignal, Signal } from "./utils/Signal";
 import { UUID } from "./utils/UUID";
+import { World } from "./World";
 
 /** 事件接口: Pool数据发生了变化 */
 export interface PoolChanged { (pool: Pool, entity: Entity): void; }
@@ -34,14 +35,14 @@ function as(obj: any, method1: string): any {
  */
 export class Pool {
 
-    /** 对池实例的全局引用 */
-    public static instance: Pool = null;
-
     /** 有效组件类型的枚举 */
     public static componentsEnum: Object = null;
 
     /** 总得组件数量 */
     public static totalComponents: number = 0;
+
+    /** 所属世界 */
+    private _world: World = null;
 
     /** 是否为调试模式 */
     public _debug: boolean = false;
@@ -118,7 +119,7 @@ export class Pool {
     }
 
     /**
-     * 如果支持，设置系统池
+     * 系统中有setPool方法时, 调用该方法进行通知
      */
     public static setPool(system: ISystem, pool: Pool) {
         const poolSystem = as(system, 'setPool')
@@ -128,8 +129,8 @@ export class Pool {
     }
 
     /** 构建Pool */
-    constructor(components: {}, totalComponents: number, debug: boolean = false, startCreationIndex: number = 0) {
-        Pool.instance = this;
+    constructor(world: World, components: {}, totalComponents: number, debug: boolean = false, startCreationIndex: number = 0) {
+        this._world = world;
 
         //绑定事件
         this.onGroupCreated = new Signal<PoolGroupChanged>(this)
@@ -286,14 +287,16 @@ export class Pool {
     /**
      * 创建系统
      */
-    public createSystem(system: any) {
-        if ('function' === typeof system) {
-            const Klass: any = system
-            system = new Klass()
-        }
+    public createSystem<T extends ISystem>(systemType: { new(): T }) {
 
+        //创建系统并初始化
+        let c = systemType;
+        let system = new c();
+
+        //通知创建完成
         Pool.setPool(system, this)
 
+        //<?>
         const reactiveSystem = as(system, 'trigger')
         if (reactiveSystem != null) {
             return new ReactiveSystem(this, reactiveSystem)

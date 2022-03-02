@@ -1,6 +1,7 @@
 import { IExecuteSystem } from "./interfaces/IExecuteSystem";
 import { IInitializeSystem } from "./interfaces/IInitializeSystem";
 import { ISystem } from "./interfaces/ISystem";
+import { World } from "./World";
 
 
 /** 检查对象中是否包含字段 */
@@ -10,6 +11,9 @@ function as(object, method: string) {
 
 export class Systems implements IInitializeSystem, IExecuteSystem {
 
+    /** 所属世界 */
+    private _world: World = null;
+
     /** 初始化系统列表 */
     protected _initializeSystems: Array<IInitializeSystem>;
 
@@ -17,7 +21,8 @@ export class Systems implements IInitializeSystem, IExecuteSystem {
     protected _executeSystems: Array<IExecuteSystem>;
 
     /** 构建系统管理 */
-    constructor() {
+    constructor(world: World) {
+        this._world = world;
         this._initializeSystems = [];
         this._executeSystems = [];
     }
@@ -32,9 +37,7 @@ export class Systems implements IInitializeSystem, IExecuteSystem {
         }
 
         const reactiveSystem = as(system, 'subsystem')
-        const initializeSystem = reactiveSystem != null
-            ? as(reactiveSystem.subsystem, 'initialize')
-            : as(system, 'initialize')
+        const initializeSystem = reactiveSystem != null ? as(reactiveSystem.subsystem, 'initialize') : as(system, 'initialize')
 
         if (initializeSystem != null) {
             const _initializeSystems = this._initializeSystems
@@ -53,7 +56,7 @@ export class Systems implements IInitializeSystem, IExecuteSystem {
     /** 初始化系统 */
     public initialize() {
         for (let i = 0, initializeSysCount = this._initializeSystems.length; i < initializeSysCount; i++) {
-            this._initializeSystems[i].initialize()
+            this._initializeSystems[i].initialize(this._world)
         }
     }
 

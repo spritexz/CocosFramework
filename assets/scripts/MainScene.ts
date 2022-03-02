@@ -6,7 +6,6 @@ import { GameController } from './logic/controllers/GameController';
 import { InputController } from './logic/controllers/InputController';
 import { ScoreLabelController } from './logic/controllers/ScoreLabelController';
 import { GameEntity } from './logic/extensions/GameEntity';
-import { Pools } from './logic/extensions/Pools';
 const { ccclass, property } = _decorator;
 
 @ccclass('MainScene')

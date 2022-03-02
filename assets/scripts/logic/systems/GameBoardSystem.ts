@@ -4,6 +4,7 @@ import { IInitializeSystem } from "../../lib/ecs/interfaces/IInitializeSystem";
 import { IReactiveSystem } from "../../lib/ecs/interfaces/IReactiveSystem";
 import { ISetPool } from "../../lib/ecs/interfaces/ISystem";
 import { TriggerOnEvent } from "../../lib/ecs/TriggerOnEvent";
+import { World } from "../../lib/ecs/World";
 import { GameEntity } from "../extensions/GameEntity";
 import { GameMatcher } from "../extensions/GameMatcher";
 import { GamePool } from "../extensions/GamePool";
@@ -24,7 +25,7 @@ export class GameBoardSystem implements IInitializeSystem, IReactiveSystem, ISet
         this.gameBoardElements = pool.getGroup(GameMatcher.allOf(GameMatcher.GameBoardElement, GameMatcher.Position));
     }
 
-    public initialize() {
+    public initialize(world: World) {
         var gameBoard = (<GameEntity>this.pool.setGameBoard(8, 9)).gameBoard;
         for (var row = 0; row < gameBoard.rows; row++) {
             for (var column = 0; column < gameBoard.columns; column++) {

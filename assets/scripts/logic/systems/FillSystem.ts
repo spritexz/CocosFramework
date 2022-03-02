@@ -1,6 +1,7 @@
 import { IReactiveSystem } from "../../lib/ecs/interfaces/IReactiveSystem";
 import { ISetPool } from "../../lib/ecs/interfaces/ISystem";
 import { TriggerOnEvent } from "../../lib/ecs/TriggerOnEvent";
+import { World } from "../../lib/ecs/World";
 import { GameBoardCacheComponent } from "../components/GameBoardCacheComponent";
 import { GameBoardComponent } from "../components/GameBoardComponent";
 import { GameEntity } from "../extensions/GameEntity";
@@ -23,6 +24,9 @@ export class FillSystem implements IReactiveSystem, ISetPool {
     
     public get trigger(): TriggerOnEvent {
         return GameMatcher.GameBoardElement.onEntityRemoved();
+    }
+
+    initialize(world: World) {
     }
 
     public setPool(pool: GamePool) {

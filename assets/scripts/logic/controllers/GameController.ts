@@ -1,8 +1,8 @@
 
 import { IController } from "../../lib/ecs/interfaces/IController";
 import { Systems } from "../../lib/ecs/Systems";
+import { World } from "../../lib/ecs/World";
 import { GamePool } from "../extensions/GamePool";
-import { Pools } from "../extensions/Pools";
 import { AddViewSystem } from "../systems/AddViewSystem";
 import { CreateGameBoardCacheSystem } from "../systems/CreateGameBoardCacheSystem";
 import { DestroySystem } from "../systems/DestroySystem";
@@ -17,23 +17,28 @@ import { ScoreSystem } from "../systems/ScoreSystem";
 /** 游戏控制器 */
 export class GameController implements IController {
 
-    systems: Systems;
+    /** 所属世界 */
+    private _world: World = null;
 
-    initialize() {
-        this.systems = this.createSystems(Pools.pool);
-        this.systems.initialize();
+    /** 系统管理器 */
+    private _systems: Systems;
+
+    initialize(world: World) {
+        this._world = world;
+        this._systems = this.createSystems(world.pool);
+        this._systems.initialize();
     }
 
     execute(dt: number) {
-        this.systems.execute();
+        this._systems.execute();
     }
 
     release() {
-        this.systems.clearReactiveSystems()
+        this._systems.clearReactiveSystems()
     }
 
     createSystems(pool: GamePool) {
-        return new Systems()
+        return new Systems(this._world)
         //输入系统
         .add(pool.createSystem(ProcessInputSystem))
         //更新系统

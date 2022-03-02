@@ -5,6 +5,7 @@ import { IMatcher } from "./interfaces/IMatcher";
 import { IMultiReactiveSystem, IReactiveExecuteSystem, IReactiveSystem } from "./interfaces/IReactiveSystem";
 import { Pool } from "./Pool";
 import { TriggerOnEvent } from "./TriggerOnEvent";
+import { World } from "./World";
 
 /** 检查对象中是否包含字段 */
 function as(object, method:string) {
@@ -15,6 +16,9 @@ function as(object, method:string) {
  * 反馈系统
  */
 export class ReactiveSystem implements IExecuteSystem {
+
+    /** 所属世界 */
+    protected _world: World = null;
 
     /** 子系统 */
     private _subsystem: IReactiveExecuteSystem;
@@ -72,6 +76,10 @@ export class ReactiveSystem implements IExecuteSystem {
         }
         this._observer = new GroupObserver(groups, eventTypes)
         this._buffer = []
+    }
+
+    initialize(world: World) {
+        this._world = world;
     }
 
     /** 激活系统 */
