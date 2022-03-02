@@ -262,6 +262,16 @@ export class Entity {
         return this._componentsCache
     }
 
+    /**
+     * 遍历所有组件
+     */
+    public foreachComponents(call:(index:number, component:IComponent)=>void) {
+        for (let i = 0; i < this._components.length; i++) {
+            const element = this._components[i];
+            call(i, element);
+        }
+    }
+
     /** 
      * 获取组件索引列表
      */

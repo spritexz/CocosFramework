@@ -1,84 +1,59 @@
 import { Entity } from "../Entity"
 import { Pool } from "../Pool"
 import { Systems } from "../Systems"
-import { EntityBehavior } from "./EntityBehavior"
-import { PoolObserver } from "./PoolObserver"
+import { World } from "../World"
 import { SystemObserver } from "./SystemObserver"
-
-/** 
- * 图形界面
- */
-export var ECSGui;
-declare var dat
-declare var example
 
 /**
  * 视觉调试
  */
 export class VisualDebugging {
-    public static _controllers
-    public static _entities
-    public static _pools
-    public static _systems
 
-    /**
-     *
-     * @param pool
-     */
-    public static init(pool: Pool) {
-        if ((pool._debug || location.search === "?debug=true") && window['dat']) {
-            ECSGui = new dat.GUI({ height: 5 * 32 - 1, width: 300 })
+    private _debugInfo: HTMLElement = null;
+    private _world: World = null;
 
-            const observer = new PoolObserver(pool)
+    /** 初始化 */
+    public init(world: World) {
+        this._world = world;
 
-            VisualDebugging._controllers = {}
-            VisualDebugging._entities = ECSGui.addFolder('Entities')
-            VisualDebugging._pools = ECSGui.addFolder('Pools')
-            VisualDebugging._systems = ECSGui.addFolder('Systems')
+        //创建debug界面
+        this._debugInfo = document.createElement('debugInfo');
+        this._debugInfo.style.position = 'absolute'
+        this._debugInfo.style.top = '60px';
+        this._debugInfo.style.left = '10px';
+        this._debugInfo.style.color = '#ffffff';
+        document.body.appendChild(this._debugInfo);
+    }
 
-            VisualDebugging._entities.open()
-            VisualDebugging._pools.open()
-            VisualDebugging._systems.open()
+    public execute(dt: number) {
 
-            VisualDebugging._pools.add(observer, 'entities').listen()
-            VisualDebugging._pools.add(observer, 'reusable').listen()
+        //控制器
+        let s = `<font size="1" color="#00E3E3">`;
+        s += `Controllers: count = ${this._world.controllers.length}\n`
+        s += '</font>';
 
-            pool.onEntityCreated.add((pool, entity: Entity) => {
-                const proxy = new EntityBehavior(entity)
-                VisualDebugging._controllers[entity.id] = VisualDebugging._entities.add(proxy, proxy.name).listen()
-            })
+        //系统
+        let systems = this._world.systems;
+        s += `<font size="1" color="#00E3E3">`;
+        s += `Systems: count = ${systems.initializeSystems.length + systems.executeSystems.length}\n`
+        s += '</font>';
+        s += `<font size="1" color="#FFAF60">`
+        s += `  > initializeSystems</font><font size="1">: ${systems.initializeSystems.length}\n</font>`;
+        s += `<font size="1" color="#FFAF60">`
+        s += `  > executeSystems</font><font size="1">: ${systems.executeSystems.length}\n</font>`;
+        
+        //实体列表
+        s += `<font size="1" color="#00E3E3">`;
+        s += `Entitys: count = ${this._world.pool.count}\n`
+        s += '</font>';
+        this._world.pool.foreachEntities((key: string, entitie: Entity)=>{
+            s += `<font size="1" color="#FFAF60">`
+            s += `  > ${entitie.name}</font><font size="1">: ${entitie.id}\n</font>`;
+            s += `<font size="1" color="#8CEA00">`
+            s += `  >> components: [\n       ${entitie.toString()}\n     ]\n</font>`
+        })
 
-            pool.onEntityDestroyed.add((pool, entity: Entity) => {
-                const controller = VisualDebugging._controllers[entity.id]
-                delete VisualDebugging._controllers[entity.id]
-                VisualDebugging._entities.remove(controller)
-            })
-
-            /** 包装Systems::initialize方法 */
-            const superInitialize = Systems.prototype.initialize
-            Systems.prototype.initialize = function () {
-                superInitialize.call(this)
-                const sys = new SystemObserver(this)
-                VisualDebugging._systems.add(sys, 'initialize').listen()
-                VisualDebugging._systems.add(sys, 'execute').listen()
-            }
-
-            // function get_Systems() {
-            //   return "Systems " + " (" +
-            //     this._initializeSystems.length + " init, " +
-            //     this._executeSystems.length + " exe "
-            // }
-
-            Object.defineProperty(Systems.prototype, 'name', { 
-                get: () => 'Systems' 
-            })
-            Object.defineProperty(Systems.prototype, 'Systems', {
-                get: () => {
-                    return "Systems " + " (" +
-                    this['_initializeSystems'].length + " init, " +
-                    this['_executeSystems'].length + " exe "
-                }
-            })
-        }
+        //更新显示
+        this._debugInfo.innerHTML = `<pre>${s}</pre>`;
     }
 }

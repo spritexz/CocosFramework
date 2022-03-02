@@ -32,13 +32,12 @@ export class MainScene extends Component {
         GameEntity.initialize(CoreComponentIds.TotalComponents, { "entities": 200, "components": 128 });
 
         //创建并初始化游戏世界
-        let controllers = [
+        this.gameWorld = new World(true);
+        this.gameWorld.initialize([
             GameController,
             InputController,
             ScoreLabelController,
-        ]
-        this.gameWorld = new World();
-        this.gameWorld.initialize(controllers);
+        ]);
     }
 
     update(dt:number) {

@@ -15,10 +15,16 @@ export class Systems implements IInitializeSystem, IExecuteSystem {
     private _world: World = null;
 
     /** 初始化系统列表 */
-    protected _initializeSystems: Array<IInitializeSystem>;
+    private _initializeSystems: Array<IInitializeSystem>;
+    public get initializeSystems(): Array<IInitializeSystem> {
+        return this._initializeSystems;
+    }
 
     /** 执行系统列表 */
-    protected _executeSystems: Array<IExecuteSystem>;
+    private _executeSystems: Array<IExecuteSystem>;
+    public get executeSystems(): Array<IExecuteSystem> {
+        return this._executeSystems;
+    }
 
     /** 构建系统管理 */
     constructor(world: World) {

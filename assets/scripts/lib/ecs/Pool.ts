@@ -253,6 +253,15 @@ export class Pool {
     }
 
     /**
+     * 遍历所有实体
+     */
+    public foreachEntities(call: (key: string, entitie: Entity) => void) {
+        for (const key in this._entities) {
+            call(key, this._entities[key])
+        }
+    }   
+
+    /**
      * 获取匹配的所有实体
      */
     public getGroup(matcher: IMatcher): Group {
