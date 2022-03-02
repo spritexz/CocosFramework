@@ -46,7 +46,7 @@ export class Group {
     public _singleEntityCache:Entity = null
 
     /** 字符串缓冲 */
-    public _toStringCache:string = ''
+    public _toStringCache:string = null
 
     /** 计算这个组中实体的数量 */
     public get count():number {

@@ -103,9 +103,14 @@ export class Pool {
         return this._totalComponents;
     }
 
-    /** 获取有效实体计数 */
+    /** 获取有效实体数量 */
     public get count(): number {
         return Object.keys(this._entities).length;
+    }
+
+    /** 获取分组数量 */
+    public get groupCount(): number {
+        return Object.keys(this._groups).length;
     }
 
     /** 获取等待回收的实体数 */
@@ -259,7 +264,29 @@ export class Pool {
         for (const key in this._entities) {
             call(key, this._entities[key])
         }
-    }   
+    }
+
+    /** 遍历所有组合 */
+    public foreachGroups(call: (key: string, group: Group) => void) {
+        for (const key in this._groups) {
+            call(key, this._groups[key])
+        }
+    }
+
+    /** 遍历所有等待回收的实体 */
+    public foreachReusableEntities(call: (index: number, entitie: Entity) => void) {
+        for (let i = 0; i < this._reusableEntities.size(); i++) {
+            const element = this._reusableEntities.get(i);
+            call(i, element);
+        }
+    }
+
+    /** 遍历仍然有引用的实体数 */
+    public foreachRetainedEntities(call: (key: string, entitie: Entity) => void) {
+        for (const key in this._retainedEntities) {
+            call(key, this._retainedEntities[key])
+        }
+    }
 
     /**
      * 获取匹配的所有实体
