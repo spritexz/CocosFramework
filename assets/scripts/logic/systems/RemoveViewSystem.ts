@@ -5,6 +5,7 @@ import { IMatcher } from "../../lib/ecs/interfaces/IMatcher";
 import { IReactiveSystem, IEnsureComponents } from "../../lib/ecs/interfaces/IReactiveSystem";
 import { ISetPool } from "../../lib/ecs/interfaces/ISystem";
 import { TriggerOnEvent } from "../../lib/ecs/TriggerOnEvent";
+import { CoreComponentIds } from "../components/CoreComponentIds";
 import { ViewComponent } from "../components/ViewComponent";
 import { GameEntity } from "../extensions/GameEntity";
 import { GameMatcher } from "../extensions/GameMatcher";
@@ -42,6 +43,17 @@ export class RemoveViewSystem implements IReactiveSystem, ISetPool, IEnsureCompo
     }
 
     release() {
+
+        //移除事件
         this._viewGroup.onEntityRemoved.remove(this.onEntityRemoved, this);
+
+        //清理界面
+        let entitys = this._viewGroup.getEntities()
+        entitys.forEach(entity=>{
+            let view = <ViewComponent>entity.getComponent(CoreComponentIds.View)
+            if (view) {
+                (<Node>view.sprite).parent = null
+            }
+        })
     }
 }
