@@ -6,9 +6,18 @@ import { World } from "../World";
 export interface IController {
 
     /**
-     * 初始化
+     * 首次加载
+     * 
+     * 调用顺序: 控制器加载(load) > 系统初始化(systems) > 控制器初始化(initialize)
      */
-    initialize(world: World);
+    load(world:World):any;
+
+    /**
+     * 初始化, 在load之后调用
+     * 
+     * 调用顺序: 控制器加载(load) > 系统初始化(systems) > 控制器初始化(initialize)
+     */
+    initialize();
 
     /**
      * 执行

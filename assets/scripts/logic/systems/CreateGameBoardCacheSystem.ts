@@ -11,22 +11,31 @@ import { GamePool } from "../extensions/GamePool";
 export class CreateGameBoardCacheSystem implements ISystem, ISetPool {
     protected pool: GamePool;
 
+    private _gameBoard: Group = null
+    private _gameBoardElements: Group = null
+
     public setPool(pool: GamePool) {
         this.pool = pool;
 
         //添加或更新棋盘实体时, 创建新的棋盘元素缓存
-        var gameBoard = pool.getGroup(GameMatcher.GameBoard);
-        gameBoard.onEntityAdded.add((group, entity, index, component) =>
-            this.createNewGameBoardCache(<GameBoardComponent>component)
-        );
-        gameBoard.onEntityUpdated.add((group, entity, index, previousComponent, newComponent) =>
-            this.createNewGameBoardCache(<GameBoardComponent>newComponent)
-        );
+        this._gameBoard = pool.getGroup(GameMatcher.GameBoard);
+        this._gameBoard.onEntityAdded.add(this.onGameBoardAdded, this);
+        this._gameBoard.onEntityUpdated.add(this.onGameBoardUpdated, this);
 
         //监听棋盘上元素的增加和删除
-        var gameBoardElements = pool.getGroup(GameMatcher.allOf(GameMatcher.GameBoardElement, GameMatcher.Position));
-        gameBoardElements.onEntityAdded.add(this.onGameBoardElementAdded);
-        gameBoardElements.onEntityRemoved.add(this.onGameBoardElementRemoved);
+        this._gameBoardElements = pool.getGroup(GameMatcher.allOf(GameMatcher.GameBoardElement, GameMatcher.Position));
+        this._gameBoardElements.onEntityAdded.add(this.onGameBoardElementAdded, this);
+        this._gameBoardElements.onEntityRemoved.add(this.onGameBoardElementRemoved, this);
+    }
+
+    /** 增加棋盘 */
+    private onGameBoardAdded(group, entity, index, component) {
+        this.createNewGameBoardCache(<GameBoardComponent>component)
+    }
+
+    /** 棋盘数据更新 */
+    private onGameBoardUpdated(group, entity, index, previousComponent, newComponent) {
+        this.createNewGameBoardCache(<GameBoardComponent>newComponent)
     }
 
     /** 创建新的游戏棋盘缓存 */
@@ -67,4 +76,11 @@ export class CreateGameBoardCacheSystem implements ISystem, ISetPool {
         delete grid[pos.x][pos.y];
         this.pool.replaceGameBoardCache(grid);
     };
+
+    release() {
+        this._gameBoard.onEntityAdded.remove(this.onGameBoardAdded, this)
+        this._gameBoard.onEntityUpdated.remove(this.onGameBoardUpdated, this)
+        this._gameBoardElements.onEntityAdded.remove(this.onGameBoardElementAdded, this)
+        this._gameBoardElements.onEntityRemoved.remove(this.onGameBoardElementRemoved, this)
+    }
 }

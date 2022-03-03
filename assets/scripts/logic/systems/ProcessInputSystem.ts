@@ -32,4 +32,7 @@ export class ProcessInputSystem implements IReactiveSystem, ISetPool {
         }
         this.pool.destroyEntity(inputEntity);
     }
+
+    release() {
+    }
 }

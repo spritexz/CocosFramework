@@ -5,6 +5,10 @@ import { World } from "../World";
  * 系统接口
  */
 export interface ISystem {
+    /**
+     * 释放
+     */
+    release();
 }
 
 /**

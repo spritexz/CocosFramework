@@ -50,6 +50,15 @@ export class Pool {
     /** 用于调试的实体名称 */
     public name: string = '';
 
+    /** 实体索引计数 */
+    public entityIndex: number = 0;
+
+    /** 组件列表内存池 */
+    public componentAlloc: Array<Array<IComponent>> = null;
+
+    /** 组件列表内存池大小 */
+    public componentAllocSize: number = 0;
+
     /** 实体列表 */
     public _entities = {};
 
@@ -134,7 +143,7 @@ export class Pool {
     }
 
     /** 构建Pool */
-    constructor(world: World, components: {}, totalComponents: number, debug: boolean = false, startCreationIndex: number = 0) {
+    constructor(world: World, componentAllocSize: number, components: {}, totalComponents: number, debug: boolean = false, startCreationIndex: number = 0) {
         this._world = world;
 
         //绑定事件
@@ -154,32 +163,86 @@ export class Pool {
         this._groupsForIndex = new Bag<Bag<Group>>()
         Pool.componentsEnum = components
         Pool.totalComponents = totalComponents
+
+        //需要申请的组件池内存大小
+        this.componentAllocSize = componentAllocSize;
+    }
+
+    /**
+     * 分配实体池
+     * @param count 组件数量
+     * @param size 最大实体数
+     */
+    public allocMemory(count: number, size: number): void {
+        this.componentAlloc = new Array(size)
+        for (let e = 0; e < size; e++) {
+            this.componentAlloc[e] = new Array(count)
+            for (let k = 0; k < count; k++) {
+                this.componentAlloc[e][k] = null
+            }
+        }
+    }
+
+    /** 
+     * 扩展实体池
+     * @param count 组件数量
+     * @param size 最大实体数
+     */
+    public extendMemory(count: number, size: number): void {
+        console.log(`${this.entityIndex}的内存分配不足, 扩展分配${size}个实体.`)
+        for (let i = this.entityIndex, l = i + size; i < l; i++) {
+            this.componentAlloc[i] = new Array(count)
+            for (let k = 0; k < count; k++) {
+                this.componentAlloc[i][k] = null;
+            }
+        }
     }
 
     /**
      * 创建一个新实体
      */
-    public createEntity<T extends Entity>(type: { new(t: number): T }, name: string): T {
+    public createEntity<T extends Entity>(type: { new(t: Array<IComponent>): T }, name: string): T {
+
+        //初始化实体池
+        const size = this.componentAllocSize;
+        if (this.componentAlloc == null) {
+            this.allocMemory(this._totalComponents, size);
+        }
+        
+        //创建实体
         let entity: T = null;
         if (this._reusableEntities.size() > 0) {
             entity = <T>this._reusableEntities.removeLast();
         } else {
-            let c = type;
-            entity = new c(this._totalComponents);
+            
+            //分配一个组件池给实体, 每个实体在创建时分配一次
+            const alloc = this.componentAlloc;
+            let instanceIndex = this.entityIndex++;
+            let componentMem: Array<IComponent> = alloc[instanceIndex];
+            if (componentMem == null) {
+                this.extendMemory(this._totalComponents, size)
+                componentMem = alloc[instanceIndex];
+            }
+
+            //构建实体
+            let entityType = type;
+            entity = new entityType(componentMem);
         }
         entity.name = name
         entity.id = UUID.randomUUID()
         entity._isEnabled = true
         entity._creationIndex = this._creationIndex++
-        entity.onComponentAdded.add(this._cachedUpdateGroupsComponentAddedOrRemoved)
-        entity.onComponentRemoved.add(this._cachedUpdateGroupsComponentAddedOrRemoved)
-        entity.onComponentReplaced.add(this._cachedUpdateGroupsComponentReplaced)
-        entity.onEntityReleased.add(this._cachedOnEntityReleased)
+        entity.onComponentAdded.add(this._cachedUpdateGroupsComponentAddedOrRemoved, this)
+        entity.onComponentRemoved.add(this._cachedUpdateGroupsComponentAddedOrRemoved, this)
+        entity.onComponentReplaced.add(this._cachedUpdateGroupsComponentReplaced, this)
+        entity.onEntityReleased.add(this._cachedOnEntityReleased, this)
         entity.addRef()
 
+        //保存实体
         this._entities[entity.id] = entity
         this._entitiesCache = null
 
+        //派发实体创建事件
         const onEntityCreated: any = this.onEntityCreated
         if (onEntityCreated.active) {
             onEntityCreated.dispatch(this, entity)
@@ -210,7 +273,7 @@ export class Pool {
         }
 
         if (entity._refCount === 1) {
-            entity.onEntityReleased.remove(this._cachedOnEntityReleased)
+            entity.onEntityReleased.remove(this._cachedOnEntityReleased, this)
             this._reusableEntities.add(entity)
         } else {
             this._retainedEntities[entity.id] = entity
@@ -377,7 +440,7 @@ export class Pool {
         if (entity._isEnabled) {
             throw new EntityIsNotDestroyedException("不能释放实体.")
         }
-        entity.onEntityReleased.remove(this._cachedOnEntityReleased)
+        entity.onEntityReleased.remove(this._cachedOnEntityReleased, this)
         delete this._retainedEntities[entity.id]
         this._reusableEntities.add(entity)
     }

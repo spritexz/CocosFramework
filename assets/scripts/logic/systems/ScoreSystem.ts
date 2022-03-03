@@ -11,19 +11,22 @@ import { GamePool } from "../extensions/GamePool";
 export class ScoreSystem implements IInitializeSystem, IReactiveSystem, ISetPool {
     protected pool:GamePool;
     public get trigger():TriggerOnEvent {
-      return GameMatcher.GameBoardElement.onEntityRemoved();
+        return GameMatcher.GameBoardElement.onEntityRemoved();
     }
     
     public setPool(pool:GamePool) {
-      this.pool = pool;
+        this.pool = pool;
     }
 
     public initialize() {
-      this.pool.setScore(0);
+        this.pool.setScore(0);
     }
     
     public execute(entities:Array<GameEntity>) {
-      var score:ScoreComponent = <ScoreComponent>(this.pool.score);
-      this.pool.replaceScore(score.value + entities.length);
+        var score:ScoreComponent = <ScoreComponent>(this.pool.score);
+        this.pool.replaceScore(score.value + entities.length);
     }
-  }
+
+    release() {
+    }
+}

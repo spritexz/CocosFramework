@@ -28,15 +28,6 @@ export interface IComponentReplaced<T> extends ISignal<T> {
  */
 export class Entity {
 
-    /** 实体索引计数 */
-    public static instanceIndex: number = 0;
-
-    /** 组件列表 */
-    public static alloc: Array<Array<IComponent>> = null;
-
-    /** 大小<?> */
-    public static size: number = 0;
-
     /** 实体名字 */
     public name: string = '';
 
@@ -88,65 +79,12 @@ export class Entity {
      * 构建实体
      *  所有东西都是一个实体，可以根据需要添加/删除组件
      */
-    constructor(totalComponents: number = 16) {
+    constructor(componentsMemory: Array<IComponent>) {
         this.onEntityReleased = new Signal<EntityReleased>(this);
         this.onComponentAdded = new Signal<EntityChanged>(this);
         this.onComponentRemoved = new Signal<EntityChanged>(this);
         this.onComponentReplaced = new Signal<ComponentReplaced>(this);
-        this._components = this.initialize(totalComponents);
-    }
-
-    /**
-     * 初始化
-     */
-    public static initialize(totalComponents: number, options: { entities?: number, components?: number }) {
-        Entity.size = options.entities || 100
-    }
-
-    /**
-     * 初始化: 分配实体池.
-     */
-    public initialize(totalComponents: number): Array<IComponent> {
-
-        //初始化实体池
-        const size = Entity.size;
-        if (Entity.alloc == null) {
-            Entity.dim(totalComponents, size);
-        }
-
-        //分配内存池
-        const alloc = Entity.alloc;
-        this.instanceIndex = Entity.instanceIndex++;
-        let mem: Array<IComponent> = alloc[this.instanceIndex];
-        if (mem) {
-            return mem;
-        }
-
-        //实体池内存不足, 扩展实体池容量
-        console.log(`${this.instanceIndex}的内存分配不足, 扩展分配${size}个实体.`)
-        for (let i = this.instanceIndex, l = i + size; i < l; i++) {
-            alloc[i] = new Array(totalComponents)
-            for (let k = 0; k < totalComponents; k++) {
-                alloc[i][k] = null;
-            }
-        }
-        mem = alloc[this.instanceIndex];
-        return mem
-    }
-
-    /**
-     * 分配实体池
-     * @param count 组件数量
-     * @param size 最大实体数
-     */
-    public static dim(count: number, size: number): void {
-        Entity.alloc = new Array(size)
-        for (let e = 0; e < size; e++) {
-            Entity.alloc[e] = new Array(count)
-            for (let k = 0; k < count; k++) {
-                Entity.alloc[e][k] = null
-            }
-        }
+        this._components = componentsMemory;
     }
 
     /**

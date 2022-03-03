@@ -148,4 +148,10 @@ export class ReactiveSystem implements IExecuteSystem {
             }
         }
     }
+
+    /** 释放 */
+    release() {
+        this._subsystem.release()
+        this._subsystem = null
+    }
 }

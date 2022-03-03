@@ -28,16 +28,19 @@ export class MainScene extends Component {
 
     init() {
 
-        //初始化
-        GameEntity.initialize(CoreComponentIds.TotalComponents, { "entities": 200, "components": 128 });
-
         //创建并初始化游戏世界
-        this.gameWorld = new World(true);
+        this.gameWorld = new World(true, 200);
         this.gameWorld.initialize([
             GameController,
             InputController,
             ScoreLabelController,
         ]);
+
+
+        tween(this.node).delay(5).call(()=>{
+            this.gameWorld.release()
+            this.init()
+        }).start()
     }
 
     update(dt:number) {

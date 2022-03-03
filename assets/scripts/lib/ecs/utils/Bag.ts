@@ -48,12 +48,12 @@ export class Bag<E> extends Array implements ImmutableBag<E> {
      * 如果存在指定元素，则从此Bag中删除第一次出现的指定元素 
      * 如果Bag不包含该元素，则该元素不变
      */
-    remove(e: E) {
+    remove(e: E, call: (e1: E, e2: E)=>boolean = null) {
         let e2: E = null;
         const size = this.size_;
         for (let i = 0; i < size; i++) {
             e2 = this[i];
-            if (e == e2) {
+            if (call ? call(e, e2) : e == e2) {
                 //用最后一个元素覆盖要删除的项
                 this[i] = this[--this.size_];
                 //最后一个元素赋空

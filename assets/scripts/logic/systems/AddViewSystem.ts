@@ -43,4 +43,7 @@ export class AddViewSystem implements IInitializeSystem, IReactiveSystem {
             }
         }
     }
+
+    release() {
+    }
 }

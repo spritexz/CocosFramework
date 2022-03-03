@@ -15,6 +15,8 @@ export class RemoveViewSystem implements IReactiveSystem, ISetPool, IEnsureCompo
     
     protected pool: GamePool;
 
+    private _viewGroup: Group = null;
+
     public get trigger(): TriggerOnEvent {
         return GameMatcher.Resource.onEntityRemoved();
     }
@@ -24,7 +26,8 @@ export class RemoveViewSystem implements IReactiveSystem, ISetPool, IEnsureCompo
     }
 
     public setPool(pool: GamePool) {
-        pool.getGroup(GameMatcher.View).onEntityRemoved.add(this.onEntityRemoved);
+        this._viewGroup = pool.getGroup(GameMatcher.View)
+        this._viewGroup.onEntityRemoved.add(this.onEntityRemoved, this);
     }
 
     public execute(entities: Array<GameEntity>) {
@@ -36,5 +39,9 @@ export class RemoveViewSystem implements IReactiveSystem, ISetPool, IEnsureCompo
     protected onEntityRemoved(group: Group, entity: GameEntity, index: number, component: IComponent) {
         let node = <Node>(<ViewComponent>component).sprite
         node.parent = null;
+    }
+
+    release() {
+        this._viewGroup.onEntityRemoved.remove(this.onEntityRemoved, this);
     }
 }

@@ -53,4 +53,7 @@ export class FallSystem implements IReactiveSystem, ISetPool {
             e.replacePosition(column, nextRowPos);
         }
     }
+
+    release() {
+    }
 }

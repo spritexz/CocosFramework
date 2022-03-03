@@ -14,6 +14,12 @@ export class Systems implements IInitializeSystem, IExecuteSystem {
     /** 所属世界 */
     private _world: World = null;
 
+    /** 系统列表 */
+    private _systems: Array<ISystem>;
+    public get systems(): Array<ISystem> {
+        return this._systems;
+    }
+
     /** 初始化系统列表 */
     private _initializeSystems: Array<IInitializeSystem>;
     public get initializeSystems(): Array<IInitializeSystem> {
@@ -31,6 +37,7 @@ export class Systems implements IInitializeSystem, IExecuteSystem {
         this._world = world;
         this._initializeSystems = [];
         this._executeSystems = [];
+        this._systems = []
     }
 
     /** 添加系统 */
@@ -42,14 +49,20 @@ export class Systems implements IInitializeSystem, IExecuteSystem {
             system = new Klass()
         }
 
+        //记录系统
+        this._systems[this._systems.length] = system;
+
+        //分组系统
         const reactiveSystem = as(system, 'subsystem')
         const initializeSystem = reactiveSystem != null ? as(reactiveSystem.subsystem, 'initialize') : as(system, 'initialize')
 
+        //需要初始化的系统
         if (initializeSystem != null) {
             const _initializeSystems = this._initializeSystems
             _initializeSystems[_initializeSystems.length] = initializeSystem
         }
 
+        //需要每帧执行的系统
         const executeSystem: IExecuteSystem = as(system, 'execute')
         if (executeSystem != null) {
             const _executeSystems = this._executeSystems
@@ -87,5 +100,17 @@ export class Systems implements IInitializeSystem, IExecuteSystem {
                 nestedSystems.clearReactiveSystems()
             }
         }
+    }
+    
+    /** 释放 */
+    release() {
+        this.clearReactiveSystems()
+        for (let i = 0; i < this._systems.length; i++) {
+            const system = this._systems[i];
+            system.release()
+        }
+        this._systems = [];
+        this._executeSystems = [];
+        this._initializeSystems = [];
     }
 }

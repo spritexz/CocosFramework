@@ -52,16 +52,16 @@ export class GroupObserver {
             const group: Group = this._groups[i]
             const eventType: GroupEventType = this._eventTypes[i]
             if (eventType === GroupEventType.OnEntityAdded) {
-                group.onEntityAdded.remove(this._addEntityCache)
-                group.onEntityAdded.add(this._addEntityCache)
+                group.onEntityAdded.remove(this._addEntityCache, this)
+                group.onEntityAdded.add(this._addEntityCache, this)
             } else if (eventType === GroupEventType.OnEntityRemoved) {
-                group.onEntityRemoved.remove(this._addEntityCache)
-                group.onEntityRemoved.add(this._addEntityCache)
+                group.onEntityRemoved.remove(this._addEntityCache, this)
+                group.onEntityRemoved.add(this._addEntityCache, this)
             } else if (eventType === GroupEventType.OnEntityAddedOrRemoved) {
-                group.onEntityAdded.remove(this._addEntityCache)
-                group.onEntityAdded.add(this._addEntityCache)
-                group.onEntityRemoved.remove(this._addEntityCache)
-                group.onEntityRemoved.add(this._addEntityCache)
+                group.onEntityAdded.remove(this._addEntityCache, this)
+                group.onEntityAdded.add(this._addEntityCache, this)
+                group.onEntityRemoved.remove(this._addEntityCache, this)
+                group.onEntityRemoved.add(this._addEntityCache, this)
             } else {
                 throw `Invalid eventType [${typeof eventType}:${eventType}] in GroupObserver::activate`
             }
@@ -74,8 +74,8 @@ export class GroupObserver {
     deactivate() {
         for (let i = 0, groupsLength = this._groups.length; i < groupsLength; i++) {
             const group: Group = this._groups[i]
-            group.onEntityAdded.remove(this._addEntityCache)
-            group.onEntityRemoved.remove(this._addEntityCache)
+            group.onEntityAdded.remove(this._addEntityCache, this)
+            group.onEntityRemoved.remove(this._addEntityCache, this)
             this.clearCollectedEntities()
         }
     }

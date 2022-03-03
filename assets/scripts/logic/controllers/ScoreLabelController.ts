@@ -11,14 +11,20 @@ import { GameMatcher } from "../extensions/GameMatcher";
 /** 分数控制器 */
 export class ScoreLabelController implements IController {
 
+    private world: World = null;
+
     public label: Label = null;
 
-    initialize(world: World) {
+    load(world: World) {
+        this.world = world;
+    }
+
+    initialize() {
         let canvas = director.getScene().getChildByName('Canvas') as any as Node
         this.label = canvas.getChildByName("Label").getComponent(Label)
         
-        var pool = world.pool;
-        pool.getGroup(GameMatcher.Score).onEntityAdded.add(this.onEntityAdded.bind(this));
+        var pool = this.world.pool;
+        pool.getGroup(GameMatcher.Score).onEntityAdded.add(this.onEntityAdded, this);
 
         this.updateScore(pool.score.value);
     }

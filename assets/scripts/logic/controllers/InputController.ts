@@ -14,8 +14,11 @@ export class InputController implements IController {
 
     public point: Vec2 = null;
 
-    initialize(world: World) {
+    load(world: World) {
         this.world = world;
+    }
+
+    initialize() {
         
         //添加触摸监听
         let canvas = director.getScene().getChildByName('Canvas') as any as Node

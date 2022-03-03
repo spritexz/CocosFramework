@@ -49,4 +49,7 @@ export class GameBoardSystem implements IInitializeSystem, IReactiveSystem, ISet
             }
         }
     }
+
+    release() {
+    }
 }

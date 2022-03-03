@@ -29,7 +29,7 @@ export class World {
     private _pool: GamePool = null;
 
     /** 系统管理器 */
-    private _systems: Systems;
+    private _systems: Systems = null;
 
     /** 调试视图 */
     private _debugView: VisualDebugging = null;
@@ -49,10 +49,14 @@ export class World {
         return this._systems;
     }
 
-    /** 构建世界 */
-    constructor(isDebug: boolean) {
+    /**
+     * 构建世界
+     * @param isDebug 是否为调试模式
+     * @param allocSize 需要申请内存的实体数量
+     */
+    constructor(isDebug: boolean, allocSize: number = 200) {
         this._isDebug = isDebug;
-        this._pool = new GamePool(this, CoreComponentIds, CoreComponentIds.TotalComponents, isDebug);
+        this._pool = new GamePool(this, allocSize, CoreComponentIds, CoreComponentIds.TotalComponents, isDebug);
     }
 
     /**
@@ -61,19 +65,22 @@ export class World {
     public initialize(types: { new(): IController }[]) {
 
         //初始化系统
-        this._systems = this.createSystems();
-        this._systems.initialize();
+        this._systems = new Systems(this);
 
         //创建控制器
         types.forEach(type=>{
             let c = type;
             let controller = new c();
+            controller.load(this)
             this._controllers.push(controller)
         })
 
+        //初始化系统
+        this._systems.initialize();
+
         //初始化控制器
         this._controllers.forEach(controller=>{
-            controller.initialize(this);
+            controller.initialize();
         })
 
         //初始化界面
@@ -84,43 +91,21 @@ export class World {
     }
 
     /**
-     * 创建系统
-     */
-    createSystems() {
-        let pool = this._pool;
-        return new Systems(this)
-        //输入系统
-        .add(pool.createSystem(ProcessInputSystem))
-        //更新系统
-        .add(pool.createSystem(CreateGameBoardCacheSystem))
-        .add(pool.createSystem(GameBoardSystem))
-        .add(pool.createSystem(FallSystem))
-        .add(pool.createSystem(FillSystem))
-        .add(pool.createSystem(ScoreSystem))
-        //渲染系统
-        .add(pool.createSystem(RemoveViewSystem))
-        .add(pool.createSystem(AddViewSystem))
-        .add(pool.createSystem(RenderPositionSystem))
-        //销毁系统
-        .add(pool.createSystem(DestroySystem));
-    }
-
-    /**
      * 执行
      */
     public execute(dt: number) {
 
         //系统
-        this._systems.execute();
+        this._systems?.execute();
 
         //控制器
-        this._controllers.forEach(controller=>{
-            controller.execute(dt);
+        this._controllers?.forEach(controller=>{
+            controller?.execute(dt);
         })
 
         //调试界面
-        if (this._pool._debug) {
-            this._debugView.execute(dt);
+        if (this._isDebug) {
+            this._debugView?.execute(dt);
         }
     }
 
@@ -128,12 +113,23 @@ export class World {
      * 释放
      */
     release() {
+
+        //依次清理掉 系统 > 实体池 > 控制器 中的数据
+        this._systems.release()
         this._pool.destroyAllEntities();
-        this._systems.clearReactiveSystems()
         this._controllers.forEach(controller=>{
             controller.release();
         })
-        this._controllers = [];
+
+        //移除调试界面
+        if (this._isDebug) {
+            this._debugView?.release();
+        }
+
+        //重置数据
+        this._systems = null;
         this._pool = null;
+        this._controllers = [];
+        this._debugView = null;
     }
 }

@@ -26,4 +26,7 @@ export class DestroySystem implements IReactiveSystem, ISetPool {
             this.pool.destroyEntity(e);
         }
     }
+
+    release() {
+    }
 }

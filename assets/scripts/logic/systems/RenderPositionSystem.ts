@@ -31,4 +31,7 @@ export class RenderPositionSystem implements IReactiveSystem, ISetPool {
             tween(node).to(0.3, { position: new Vec3(x, y) }).start();
         }
     }
+
+    release() {
+    }
 }
