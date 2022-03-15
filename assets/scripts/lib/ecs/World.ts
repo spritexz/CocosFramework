@@ -1,5 +1,4 @@
 
-import { GamePool } from "../../logic/extensions/GamePool";
 import { IController } from "./interfaces/IController";
 import { Pool } from "./Pool";
 import { Systems } from "./Systems";
@@ -17,7 +16,7 @@ export class World {
     private _controllers: IController[] = [];
 
     /** 当前Pool */
-    private _pool: GamePool = null;
+    private _pool: Pool = null;
 
     /** 系统管理器 */
     private _systems: Systems = null;
@@ -50,8 +49,7 @@ export class World {
         isDebug: boolean = false, allocSize: number = 200) 
     {
         let cPool = poolType;
-        let pool = new cPool(this, allocSize, components, totalComponents, isDebug)
-        this._pool = pool as any;
+        this._pool = new cPool(this, allocSize, components, totalComponents, isDebug);
         this._isDebug = isDebug;
     }
 
