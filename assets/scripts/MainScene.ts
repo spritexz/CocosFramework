@@ -6,6 +6,7 @@ import { GameController } from './logic/controllers/GameController';
 import { InputController } from './logic/controllers/InputController';
 import { ScoreLabelController } from './logic/controllers/ScoreLabelController';
 import { GameEntity } from './logic/extensions/GameEntity';
+import { GamePool } from './logic/extensions/GamePool';
 const { ccclass, property } = _decorator;
 
 @ccclass('MainScene')
@@ -29,7 +30,8 @@ export class MainScene extends Component {
     init() {
 
         //创建并初始化游戏世界
-        this.gameWorld = new World(true, 200);
+        this.gameWorld = new World();
+        this.gameWorld.load(GamePool, CoreComponentIds, CoreComponentIds.TotalComponents, true, 200)
         this.gameWorld.initialize([
             GameController,
             InputController,

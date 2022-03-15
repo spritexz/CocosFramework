@@ -1,16 +1,7 @@
-import { CoreComponentIds } from "../../logic/components/CoreComponentIds";
+
 import { GamePool } from "../../logic/extensions/GamePool";
-import { AddViewSystem } from "../../logic/systems/AddViewSystem";
-import { CreateGameBoardCacheSystem } from "../../logic/systems/CreateGameBoardCacheSystem";
-import { DestroySystem } from "../../logic/systems/DestroySystem";
-import { FallSystem } from "../../logic/systems/FallSystem";
-import { FillSystem } from "../../logic/systems/FillSystem";
-import { GameBoardSystem } from "../../logic/systems/GameBoardSystem";
-import { ProcessInputSystem } from "../../logic/systems/ProcessInputSystem";
-import { RemoveViewSystem } from "../../logic/systems/RemoveViewSystem";
-import { RenderPositionSystem } from "../../logic/systems/RenderPositionSystem";
-import { ScoreSystem } from "../../logic/systems/ScoreSystem";
 import { IController } from "./interfaces/IController";
+import { Pool } from "./Pool";
 import { Systems } from "./Systems";
 import { VisualDebugging } from "./viewer/VisualDebugging";
 
@@ -40,7 +31,7 @@ export class World {
     }
 
     /** 获取当前pool */
-    public get pool(): GamePool {
+    public get pool(): Pool {
         return this._pool;
     }
 
@@ -49,20 +40,29 @@ export class World {
         return this._systems;
     }
 
-    /**
-     * 构建世界
+    /** 
+     * 加载
      * @param isDebug 是否为调试模式
      * @param allocSize 需要申请内存的实体数量
      */
-    constructor(isDebug: boolean, allocSize: number = 200) {
+    public load<T extends Pool>(poolType:{ new(...args: any):T }, 
+        components: {}, totalComponents: number, 
+        isDebug: boolean = false, allocSize: number = 200) 
+    {
+        let cPool = poolType;
+        let pool = new cPool(this, allocSize, components, totalComponents, isDebug)
+        this._pool = pool as any;
         this._isDebug = isDebug;
-        this._pool = new GamePool(this, allocSize, CoreComponentIds, CoreComponentIds.TotalComponents, isDebug);
     }
 
     /**
      * 初始化
      */
     public initialize(types: { new(): IController }[]) {
+        if (this._pool == null) {
+            console.error("请调用load()后再进行初始化操作!!!");
+            return
+        }
 
         //初始化系统
         this._systems = new Systems(this);
